@@ -17,41 +17,38 @@ export class TabulaSettingTab extends PluginSettingTab {
     new Setting(containerEl)
       .setName('Auto-execute on save')
       .setDesc(
-        'Automatically execute Tabula scripts when saving markdown files',
+        'Automatically execute tabula scripts when saving markdown files.',
       )
       .addToggle((toggle) =>
         toggle
           .setValue(this.plugin.settings.autoExecution)
           .onChange(async (value) => {
             this.plugin.settings.autoExecution = value
-            await this.plugin.saveSettings()
+            this.plugin.saveSettings()
           }),
       )
 
     new Setting(containerEl)
       .setName('Tabula executable path')
       .setDesc(
-        "Use 'tabula' to use the version in your PATH, or specify an absolute path.",
+        "Use 'tabula' to use the version in your path, or specify an absolute path.",
       )
       .addText((text) =>
-        text
-          .setPlaceholder('tabula')
-          .setValue(this.plugin.settings.executablePath)
-          .onChange(async (value) => {
-            this.plugin.settings.executablePath = value
-            await this.plugin.saveSettings()
-          }),
+        text.setValue(this.plugin.settings.executablePath).onChange((value) => {
+          this.plugin.settings.executablePath = value
+          this.plugin.saveSettings()
+        }),
       )
 
     new Setting(containerEl)
       .setName('Auto format output')
-      .setDesc('align CSV output to make it resemble a table')
+      .setDesc('Align csv output to make it resemble a table.')
       .addToggle((toggle) =>
         toggle
           .setValue(this.plugin.settings.autoFormat)
           .onChange(async (value) => {
             this.plugin.settings.autoFormat = value
-            await this.plugin.saveSettings()
+            this.plugin.saveSettings()
           }),
       )
 
@@ -63,7 +60,7 @@ export class TabulaSettingTab extends PluginSettingTab {
           .setValue(this.plugin.settings.tableIndex)
           .onChange(async (value) => {
             this.plugin.settings.tableIndex = value
-            await this.plugin.saveSettings()
+            this.plugin.saveSettings()
           }),
       )
   }

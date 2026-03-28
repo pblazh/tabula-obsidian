@@ -22,8 +22,8 @@ export default class TabulaPlugin extends Plugin {
     highlightSyntax(this)
 
     this.addCommand({
-      id: 'tabula-execute',
-      name: 'execute',
+      id: 'execute',
+      name: 'Execute',
       checkCallback: (checking: boolean) => {
         const file = this.app.workspace.getActiveFile()
         if (file instanceof TFile && file.extension === 'md') {
@@ -37,8 +37,8 @@ export default class TabulaPlugin extends Plugin {
     })
 
     this.addCommand({
-      id: 'tabula-toggle',
-      name: 'toggle auto execution',
+      id: 'toggle',
+      name: 'Toggle auto execution',
       callback: () => {
         this.settings.autoExecution = !this.settings.autoExecution
         this.saveSettings()
@@ -46,16 +46,16 @@ export default class TabulaPlugin extends Plugin {
     })
 
     this.addCommand({
-      id: 'tabula-index',
-      name: 'toggle rows and columns names visibility',
+      id: 'index',
+      name: 'Toggle rows and columns names visibility',
       callback: () => {
         this.settings.tableIndex = !this.settings.tableIndex
         this.saveSettings()
       },
     })
 
-    this.registerMarkdownCodeBlockProcessor('csv', (source, el, _ctx) => {
-      renderTable(this.settings, source, el)
+    this.registerMarkdownCodeBlockProcessor('csv', async (source, el, _ctx) => {
+      await renderTable(this.settings, source, el)
     })
     this.registerMarkdownCodeBlockProcessor('tabula', (source, el, _ctx) => {
       renderCode(this.settings, source, el)
@@ -63,7 +63,7 @@ export default class TabulaPlugin extends Plugin {
 
     // Listen for markdown file modifications
     this.registerEvent(
-      this.app.vault.on('modify', async (file) => {
+      this.app.vault.on('modify', (file) => {
         if (!this.settings.autoExecution) {
           return
         }
@@ -79,12 +79,12 @@ export default class TabulaPlugin extends Plugin {
     this.addSettingTab(new TabulaSettingTab(this.app, this))
   }
 
-  private async executeOnFile(file: TFile) {
+  private executeOnFile(file: TFile) {
     if (this.updatingFiles.has(file.path)) return
     this.updatingFiles.add(file.path)
 
     try {
-      await this.runExecution(file)
+      this.runExecution(file)
     } finally {
       this.updatingFiles.delete(file.path)
     }
@@ -110,7 +110,7 @@ export default class TabulaPlugin extends Plugin {
 
     const activeView = this.app.workspace.getActiveViewOfType(MarkdownView)
     const isActiveFile = activeView?.file?.path === file.path
-    const cursor = isActiveFile ? activeView!.editor.getCursor() : null
+    const cursor = isActiveFile ? activeView.editor.getCursor() : null
 
     // vault.process ensures the write is serialized with other vault operations.
     // If the file was edited during execution, preserve user changes.
@@ -133,12 +133,12 @@ export default class TabulaPlugin extends Plugin {
     this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData())
   }
 
-  async saveSettings() {
-    await this.saveData(this.settings)
-
-    this.app.workspace.iterateAllLeaves((leaf: WorkspaceLeaf) => {
-      // @ts-expect-error wrong types
-      leaf?.rebuildView?.()
+  saveSettings() {
+    this.saveData(this.settings).then(() => {
+      this.app.workspace.iterateAllLeaves((leaf: WorkspaceLeaf) => {
+        // @ts-expect-error wrong types
+        leaf?.rebuildView?.()
+      })
     })
   }
 }
