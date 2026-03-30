@@ -1,25 +1,37 @@
-import js from '@eslint/js'
 import tseslint from 'typescript-eslint'
+import { defineConfig } from 'eslint/config'
 import prettier from 'eslint-config-prettier'
 import prettierPlugin from 'eslint-plugin-prettier'
+import obsidianmd from 'eslint-plugin-obsidianmd'
+import globals from 'globals'
 
-export default [
-  js.configs.recommended,
+import tsparser from '@typescript-eslint/parser'
 
+export default defineConfig([
+  { ignores: ['node_modules', 'out', 'dist'] },
   ...tseslint.configs.recommended,
-
+  ...obsidianmd.configs.recommended,
   {
-    files: ['src/**/*.ts'],
-    ignores: ['node_modules', 'out', 'dist', '*.mjs'],
-
+    files: ['src/**/*.test.ts'],
+    languageOptions: {
+      globals: {
+        ...globals.jest,
+      },
+    },
+  },
+  {
     plugins: {
       prettier: prettierPlugin,
     },
+    files: ['src/**/*.ts'],
+    ignores: ['*.mjs'],
     languageOptions: {
-      parser: tseslint.parser,
-      parserOptions: {
-        sourceType: 'module',
-        ecmaVersion: 'latest',
+      parser: tsparser,
+      parserOptions: { project: './tsconfig.json' },
+      globals: {
+        ...globals.browser,
+        ...globals.node,
+        CodeMirror: 'readonly',
       },
     },
     rules: {
@@ -46,6 +58,5 @@ export default [
       ],
     },
   },
-
-  prettier, // disables rules conflicting with Prettier
-]
+  prettier,
+])

@@ -17,12 +17,12 @@ export class TabulaSettingTab extends PluginSettingTab {
     new Setting(containerEl)
       .setName('Auto-execute on save')
       .setDesc(
-        'Automatically execute tabula scripts when saving markdown files.',
+        'Automatically execute tabula scripts when saving Markdown files.',
       )
       .addToggle((toggle) =>
         toggle
           .setValue(this.plugin.settings.autoExecution)
-          .onChange(async (value) => {
+          .onChange((value) => {
             this.plugin.settings.autoExecution = value
             this.plugin.saveSettings()
           }),
@@ -34,34 +34,35 @@ export class TabulaSettingTab extends PluginSettingTab {
         "Use 'tabula' to use the version in your path, or specify an absolute path.",
       )
       .addText((text) =>
-        text.setValue(this.plugin.settings.executablePath).onChange((value) => {
-          this.plugin.settings.executablePath = value
-          this.plugin.saveSettings()
-        }),
+        text
+          // skip as this is a name fo the executabele
+          // eslint-disable-next-line obsidianmd/ui/sentence-case
+          .setPlaceholder('tabula')
+          .setValue(this.plugin.settings.executablePath)
+          .onChange((value) => {
+            this.plugin.settings.executablePath = value
+            this.plugin.saveSettings()
+          }),
       )
 
     new Setting(containerEl)
       .setName('Auto format output')
-      .setDesc('Align csv output to make it resemble a table.')
+      .setDesc('Align CSV output to make it resemble a table.')
       .addToggle((toggle) =>
-        toggle
-          .setValue(this.plugin.settings.autoFormat)
-          .onChange(async (value) => {
-            this.plugin.settings.autoFormat = value
-            this.plugin.saveSettings()
-          }),
+        toggle.setValue(this.plugin.settings.autoFormat).onChange((value) => {
+          this.plugin.settings.autoFormat = value
+          this.plugin.saveSettings()
+        }),
       )
 
     new Setting(containerEl)
       .setName('Table index')
       .setDesc('Show columns and rows names')
       .addToggle((toggle) =>
-        toggle
-          .setValue(this.plugin.settings.tableIndex)
-          .onChange(async (value) => {
-            this.plugin.settings.tableIndex = value
-            this.plugin.saveSettings()
-          }),
+        toggle.setValue(this.plugin.settings.tableIndex).onChange((value) => {
+          this.plugin.settings.tableIndex = value
+          this.plugin.saveSettings()
+        }),
       )
   }
 }

@@ -83,11 +83,9 @@ export default class TabulaPlugin extends Plugin {
     if (this.updatingFiles.has(file.path)) return
     this.updatingFiles.add(file.path)
 
-    try {
-      this.runExecution(file)
-    } finally {
+    this.runExecution(file).catch(() => {
       this.updatingFiles.delete(file.path)
-    }
+    })
   }
 
   private async runExecution(file: TFile): Promise<void> {
@@ -99,7 +97,7 @@ export default class TabulaPlugin extends Plugin {
       processed = await executer.execute()
     } catch (err) {
       const error = err instanceof Error ? err : new Error(String(err))
-      const isNotFound = (error as NodeJS.ErrnoException).code === 'ENOENT'
+      const isNotFound = (error as { code?: string }).code === 'ENOENT'
       const message = isNotFound
         ? `Tabula: executable not found at "${this.settings.executablePath}". Check the path in settings.`
         : `Tabula: ${error.message}`
@@ -130,15 +128,24 @@ export default class TabulaPlugin extends Plugin {
   }
 
   async loadSettings() {
-    this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData())
+    this.settings = Object.assign(
+      {},
+      DEFAULT_SETTINGS,
+      (await this.loadData()) as Partial<TabulaSettings>,
+    )
   }
 
   saveSettings() {
-    this.saveData(this.settings).then(() => {
-      this.app.workspace.iterateAllLeaves((leaf: WorkspaceLeaf) => {
-        // @ts-expect-error wrong types
-        leaf?.rebuildView?.()
+    this.saveData(this.settings)
+      .then(() => {
+        this.app.workspace.iterateAllLeaves((leaf: WorkspaceLeaf) => {
+          // @ts-expect-error wrong types
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+          leaf?.rebuildView?.()
+        })
       })
-    })
+      .catch((err) => {
+        console.error(err)
+      })
   }
 }
