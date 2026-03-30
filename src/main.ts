@@ -147,7 +147,6 @@ export default class TabulaPlugin extends Plugin {
       .then(() => {
         this.app.workspace.iterateAllLeaves((leaf: WorkspaceLeaf) => {
           // @ts-expect-error wrong types
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-call
           leaf?.rebuildView?.()
         })
       })

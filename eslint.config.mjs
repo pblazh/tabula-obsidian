@@ -35,6 +35,7 @@ export default defineConfig([
       },
     },
     rules: {
+      '@typescript-eslint/no-unsafe-call': 'off',
       'no-unused-vars': 'off',
       '@typescript-eslint/no-unused-vars': [
         'error',
