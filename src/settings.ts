@@ -35,9 +35,8 @@ export class TabulaSettingTab extends PluginSettingTab {
       )
       .addText((text) =>
         text
-          // skip as this is a name fo the executabele
-          // eslint-disable-next-line obsidianmd/ui/sentence-case
-          .setPlaceholder('tabula')
+          // skip as it failse checks from the Obsidain repository auto validation
+          // .setPlaceholder('tabula')
           .setValue(this.plugin.settings.executablePath)
           .onChange((value) => {
             this.plugin.settings.executablePath = value

@@ -37,12 +37,10 @@ export function highlightSyntax(self: Plugin) {
         }
 
         // @ts-expect-error wrong types
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
         CodeMirror.defineSimpleMode('tabula', mode)
 
         self.app.workspace.iterateAllLeaves((leaf: WorkspaceLeaf) => {
           // @ts-expect-error wrong types
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-call
           leaf?.rebuildView?.()
         })
 
