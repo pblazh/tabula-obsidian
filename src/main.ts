@@ -83,9 +83,11 @@ export default class TabulaPlugin extends Plugin {
     if (this.updatingFiles.has(file.path)) return
     this.updatingFiles.add(file.path)
 
-    this.runExecution(file).catch(() => {
-      this.updatingFiles.delete(file.path)
-    })
+    this.runExecution(file)
+      .catch((err) => console.error(err))
+      .finally(() => {
+        this.updatingFiles.delete(file.path)
+      })
   }
 
   private async runExecution(file: TFile): Promise<void> {
@@ -118,6 +120,11 @@ export default class TabulaPlugin extends Plugin {
     })
 
     if (isActiveFile) {
+      // Double requestAnimationFrame: vault.process triggers an async editor reload
+      // that completes in a subsequent frame. A single RAF fires before that reload,
+      // causing focus/cursor to be reset. This is a timing heuristic, not an API contract.
+      await new Promise((resolve) => requestAnimationFrame(resolve))
+
       requestAnimationFrame(() => {
         const view = this.app.workspace.getActiveViewOfType(MarkdownView)
         if (view?.file?.path !== file.path) return
