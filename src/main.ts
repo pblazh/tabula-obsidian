@@ -125,7 +125,7 @@ export default class TabulaPlugin extends Plugin {
       // causing focus/cursor to be reset. This is a timing heuristic, not an API contract.
       await new Promise((resolve) => requestAnimationFrame(resolve))
 
-      requestAnimationFrame(() => {
+      window.requestAnimationFrame(() => {
         const view = this.app.workspace.getActiveViewOfType(MarkdownView)
         if (view?.file?.path !== file.path) return
         if (cursor) view.editor.setCursor(cursor)
