@@ -44,7 +44,7 @@ export function highlightSyntax(self: Plugin) {
           leaf?.rebuildView?.()
         })
 
-        clearInterval(setupInterval)
+        window.clearInterval(setupInterval)
       }
     }, 100),
   )
